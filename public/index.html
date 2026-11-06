@@ -1,1 +1,98 @@
-<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>岗位研究台 · 上海</title><link rel="stylesheet" href="/style.css?v=1.3.0"><body><header><span class="brand">研 / 职</span><span>RESEARCH CAREER DESK</span><small>本机工作区 · 上海 · v1.3</small></header><main><aside><p class="eyebrow">01 / 搜索配置</p><h1>让下一个岗位<br>更接近你的研究。</h1><p class="sub">搜索、筛选、保留证据。职位与登录状态存于本机。</p><form id="config"><label>检索关键词<textarea id="keywords" rows="7" required></textarea></label><label>每个关键词最多浏览<select id="pages"><option>1</option><option selected>2</option><option>3</option><option>4</option><option>5</option></select>批列表</label><fieldset><legend>网站</legend><label><input type="checkbox" name="site" value="boss" checked>BOSS直聘</label><label><input type="checkbox" name="site" value="liepin" checked>猎聘</label><label><input type="checkbox" name="site" value="maimai" checked>脉脉</label></fieldset><label><input id="finance" type="checkbox" checked>优先金融研究岗位</label><label><input id="intern" type="checkbox" checked>排除实习与校招</label><details><summary>脉脉职位页入口</summary><input id="maimaiUrl" type="url"><p>首次登录后进入职位搜索页。入口变化时可填入新地址；搜索框未识别时使用“采集当前页”。</p></details><button type="submit" class="secondary">保存配置</button></form><p class="small">城市缺失的岗位标记“待确认”；筛选结果不等于职位适合度判断。</p></aside><section class="workspace"><div class="section-head"><div><p class="eyebrow">02 / 浏览与归档</p><h2>上海金融研究职位</h2></div><div id="counts" class="counts">0<span>匹配岗位</span></div></div><div class="sites" id="sites"></div><div class="actions"><button id="start">开始批量浏览</button><button id="resume" class="secondary">继续</button><button id="stop" class="secondary">停止</button><button id="skip" class="quiet">跳过当前关键词</button></div><div class="status" role="status" aria-live="polite"><strong id="status">准备就绪</strong><span id="progress"></span><p id="message">先打开网站，在工具浏览器中完成登录。</p></div><details class="logs"><summary>浏览记录</summary><pre id="log"></pre></details><div class="toolbar"><label>显示<select id="filter"><option value="match">匹配岗位</option><option value="all">全部采集</option><option value="saved">已收藏</option></select></label><input id="search" placeholder="在结果中搜索公司、岗位或关键词"><a id="csv" href="/api/export">导出 CSV</a><a id="json" href="/api/export?format=json">JSON</a></div><div id="results" class="results"><div class="empty">尚未采集岗位<br><span>登录网站后开始批量浏览，或采集当前搜索结果页。</span></div></div></section></main><div id="toast" role="alert"></div><script type="module" src="/app.js?v=1.3.0"></script></body></html>
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>岗位搜索 · 上海</title>
+  <link rel="stylesheet" href="/style.css?v=1.3-ui2">
+</head>
+<body>
+  <a class="skip-link" href="#results">跳到岗位列表</a>
+  <header class="app-header">
+    <div class="app-title">
+      <svg class="app-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="3" y="6" width="18" height="15" rx="2"/><path d="M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2M3 12h18M10 12v3h4v-3"/></svg>
+      <h1>岗位搜索</h1>
+      <span class="header-divider"></span>
+      <span class="app-scope">上海 · 金融研究</span>
+    </div>
+    <span class="connection" id="connection"><span class="status-dot"></span><span id="connectionText">连接中</span></span>
+  </header>
+
+  <main class="app-layout">
+    <aside class="sidebar" aria-label="搜索配置">
+      <details class="config-panel" id="configPanel" open>
+        <summary class="config-heading"><span>搜索配置</span><span class="config-summary" id="keywordCount"></span><span class="chevron" aria-hidden="true"></span></summary>
+        <form id="config">
+          <label class="field" for="keywords"><span>检索关键词</span><span class="field-note">每行一个</span></label>
+          <textarea id="keywords" rows="6" required spellcheck="false"></textarea>
+          <div class="field-row">
+            <label for="pages">每词最多浏览</label>
+            <div class="input-unit"><select id="pages"><option>1</option><option selected>2</option><option>3</option><option>4</option><option>5</option></select><span>批</span></div>
+          </div>
+          <fieldset class="source-options">
+            <legend>搜索网站</legend>
+            <label><input type="checkbox" name="site" value="boss" checked>BOSS直聘</label>
+            <label><input type="checkbox" name="site" value="liepin" checked>猎聘</label>
+            <label><input type="checkbox" name="site" value="maimai" checked>脉脉</label>
+          </fieldset>
+          <fieldset class="filter-options">
+            <legend>筛选条件</legend>
+            <label><input id="finance" type="checkbox" checked>优先金融研究岗位</label>
+            <label><input id="intern" type="checkbox" checked>排除实习与校招</label>
+          </fieldset>
+          <details class="advanced">
+            <summary>脉脉职位页入口</summary>
+            <label class="sr-only" for="maimaiUrl">脉脉职位页地址</label>
+            <input id="maimaiUrl" type="url" spellcheck="false">
+            <p class="hint">可填入登录后的职位搜索地址。</p>
+          </details>
+          <button type="submit" class="secondary save-config">保存配置</button>
+          <p class="config-feedback" id="configFeedback" role="status"></p>
+        </form>
+      </details>
+      <p class="sidebar-note">地点缺失的岗位标记为“待确认”，可在全部采集中查看。</p>
+    </aside>
+
+    <section class="workspace" aria-labelledby="workspaceHeading">
+      <div class="workspace-heading">
+        <h2 id="workspaceHeading">岗位列表</h2>
+        <div id="counts" class="counts" aria-label="采集统计"></div>
+      </div>
+
+      <section class="browser-panel" aria-label="网站连接与浏览任务">
+        <div class="sites" id="sites"></div>
+        <div class="task-panel">
+          <div class="task-actions">
+            <div class="actions">
+              <button id="start">开始批量浏览</button>
+              <button id="resume" class="secondary">继续</button>
+              <button id="stop" class="secondary">停止</button>
+              <button id="skip" class="quiet">跳过关键词</button>
+            </div>
+            <div class="task-indicator"><strong id="status">准备就绪</strong><span id="progress">0 / 0</span></div>
+          </div>
+          <progress id="taskProgress" value="0" max="1" aria-label="浏览进度"></progress>
+          <p class="task-message" id="message" role="status" aria-live="polite">打开网站并登录后开始浏览。</p>
+          <details class="logs"><summary>浏览记录</summary><pre id="log"></pre></details>
+        </div>
+      </section>
+
+      <section class="result-panel" aria-label="岗位结果">
+        <div class="toolbar">
+          <label class="view-select" for="filter"><span class="sr-only">结果范围</span><select id="filter"><option value="match">匹配岗位</option><option value="all">全部采集</option><option value="saved">已收藏</option></select></label>
+          <div class="result-search">
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5"/><path d="m13 13 4 4"/></svg>
+            <input id="search" type="search" aria-label="搜索已采集岗位" placeholder="搜索岗位、公司或关键词">
+          </div>
+          <span id="resultCount" class="result-count"></span>
+          <div class="exports"><a id="csv" class="export-link" href="/api/export">导出 CSV</a><a id="json" href="/api/export?format=json">JSON</a></div>
+        </div>
+        <div class="list-heading" aria-hidden="true"><span>岗位 / 公司</span><span>薪资</span><span>来源 / 地点</span><span class="align-right">收藏</span></div>
+        <div id="results" class="results" tabindex="-1"><div class="empty"><strong>暂无岗位</strong><p>登录网站后开始浏览，或采集当前搜索结果页。</p></div></div>
+      </section>
+    </section>
+  </main>
+  <div id="toast" role="alert"></div>
+  <script type="module" src="/app.js?v=1.3-ui2"></script>
+</body>
+</html>
